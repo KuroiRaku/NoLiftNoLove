@@ -63,8 +63,8 @@ ANoLiftNoLoveCharacter::ANoLiftNoLoveCharacter()
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 	IsWeightLifting = false;
 
-	TotalTimeForWeightLifting = 1.5f;
-	TotalTimeForDumbellLifting = 0.2f;
+	TotalTimeForWeightLifting = 1.125f;
+	TotalTimeForDumbellLifting = 0.625f;
 }
 
 
@@ -74,24 +74,23 @@ void ANoLiftNoLoveCharacter::StartLifting()
 	//if player are not interacting, then meh :p
 	if (IsInteractingBarbell) {
 		IsWeightLifting = true;
-		SIMP->SetFlipbook(WeightLifting);
+		//SIMP->SetFlipbook(WeightLifting);
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("Is the code delaying? Before")));
 		GetWorld()->GetTimerManager().SetTimer(TimerForLifting, this, &ANoLiftNoLoveCharacter::CheckIfStillLifting, TotalTimeForWeightLifting, false);
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("Is the code delaying? After")));
 	}
 	if (IsInteractingDumbell) {
 		IsDumbbellLifting = true;
-		SIMP->SetFlipbook(DumbbellLifting);
-		DumbellLiftingRep += 1;
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("You finish one dumbell! Current Count: %d"), DumbellLiftingRep));
-		GetWorld()->GetTimerManager().SetTimer(TimerForLifting, this, &ANoLiftNoLoveCharacter::RevertAnimation, TotalTimeForDumbellLifting, false);
+		//SIMP->SetFlipbook(DumbbellLifting);
+		//DumbellLiftingRep += 1;
+		GetWorld()->GetTimerManager().SetTimer(TimerForLifting, this, &ANoLiftNoLoveCharacter::CheckIfStillLifting, TotalTimeForDumbellLifting, false);
 	}
 }
 
 void ANoLiftNoLoveCharacter::RevertAnimation()
 {
 
-	SIMP->SetFlipbook(Idle);
+	//SIMP->SetFlipbook(Idle);
 }
 
 
@@ -99,12 +98,21 @@ void ANoLiftNoLoveCharacter::CheckIfStillLifting()
 {
 	if (IsWeightLifting)
 	{
-		
-		WeightLiftingRep += 1;
+		if (IsInteractingBarbell) {
+			WeightLiftingRep += 1;
+			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Some variable values: x: %f, y: %f"), x, y));
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("You finish one rep! Current Rep: %d"), WeightLiftingRep));
+			IsWeightLifting = false;
+			//SIMP->SetFlipbook(Idle);
+		}
+	}
+	if (IsInteractingDumbell) {
+		DumbellLiftingRep += 1;
 		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Some variable values: x: %f, y: %f"), x, y));
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("You finish one rep! Current Rep: %d"), WeightLiftingRep));
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("You finish one dumbell! Current Count: %d"), DumbellLiftingRep));
 		IsWeightLifting = false;
-		SIMP->SetFlipbook(Idle);
+		//SIMP->SetFlipbook(Idle);
+
 	}
 
 	
@@ -122,14 +130,14 @@ void ANoLiftNoLoveCharacter::CheckIfLifting()
 		
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("Not Finish WeightLifting! Resetted IsWeightLifting")));
 		GetWorldTimerManager().ClearTimer(TimerForLifting);
-		SIMP->SetFlipbook(Idle);
+		//SIMP->SetFlipbook(Idle);
 	}
 
 	if (IsDumbbellLifting)
 	{
 		IsDumbbellLifting = false;
 		GetWorldTimerManager().ClearTimer(TimerForLifting);
-		SIMP->SetFlipbook(Idle);
+		//SIMP->SetFlipbook(Idle);
 	}
 }
 
