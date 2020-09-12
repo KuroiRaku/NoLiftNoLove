@@ -6,6 +6,13 @@
 #include "GameFramework/Character.h"
 #include "NoLiftNoLoveCharacter.generated.h"
 
+
+UENUM()
+enum class EObjectHolding
+{
+	DUMBELL,
+	WEIGHTLIFTER
+};
 UCLASS(config=Game)
 class ANoLiftNoLoveCharacter : public ACharacter
 {
@@ -19,24 +26,90 @@ class ANoLiftNoLoveCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
 
+
+
 protected:
 
 	/** Called for side to side input */
 	void MoveRight(float Val);
 
-	/** Handle touch inputs. */
-	void TouchStarted(const ETouchIndex::Type FingerIndex, const FVector Location);
-
-	/** Handle touch stop event. */
-	void TouchStopped(const ETouchIndex::Type FingerIndex, const FVector Location);
+	void MoveForward(float Value);
 
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 	// End of APawn interface
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character", meta = (AllowPrivateAccess = "true"))
+	class UPaperFlipbookComponent* SIMP;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character", meta = (AllowPrivateAccess = "true"))
+	class UPaperFlipbook* Idle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character", meta = (AllowPrivateAccess = "true"))
+	class UPaperFlipbook* WeightLifting;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character", meta = (AllowPrivateAccess = "true"))
+	class UPaperFlipbook* Dropdown;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character", meta = (AllowPrivateAccess = "true"))
+	class UPaperFlipbook* DumbbellLifting;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character", meta = (AllowPrivateAccess = "true"))
+	float Score;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character", meta = (AllowPrivateAccess = "true"))
+	int WeightLiftingRep;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character", meta = (AllowPrivateAccess = "true"))
+	float TotalTimeForWeightLifting;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character", meta = (AllowPrivateAccess = "true"))
+	int DumbellLiftingRep;
+
+
+	//interaction 
+
+
+	//we only implement stats on fullgame :p
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats", meta = (AllowPrivateAccess = "true"))
+	int Strength;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats", meta = (AllowPrivateAccess = "true"))
+	int Endurance;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats", meta = (AllowPrivateAccess = "true"))
+	int Flexibility;
+
+	//Stats affect story
+	//Tread Mill will increase stamina
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats", meta = (AllowPrivateAccess = "true"))
+	int Stamina;
 
 public:
+
+
 	ANoLiftNoLoveCharacter();
+
+	FTimerHandle TimerForLifting;
+
+	//interaction
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character", meta = (AllowPrivateAccess = "true"))
+	bool IsInteractingDumbell;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character", meta = (AllowPrivateAccess = "true"))
+	bool IsInteractingBarbell;
+
+	bool IsWeightLifting;
+
+	bool IsDumbbellLifting;
+
+	void StartLifting();
+
+	void CheckIfLifting();
+
+	void CheckIfStillLifting();
+
+	void AddStatsForDumbbell();
 
 	/** Returns SideViewCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetSideViewCameraComponent() const { return SideViewCameraComponent; }
