@@ -62,26 +62,12 @@ ANoLiftNoLoveCharacter::ANoLiftNoLoveCharacter()
 
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 	IsWeightLifting = false;
+
+	TotalTimeForWeightLifting = 1.5f;
+	TotalTimeForDumbellLifting = 0.2f;
 }
 
-void ANoLiftNoLoveCharacter::MoveForward(float Value)
-{
-	//normal movement speed
-	if ((Controller != NULL) && (Value != 0.0f))
-	{
 
-		// find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
-
-		// get forward vector
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-
-
-
-		AddMovementInput(Direction, Value);
-	}
-}
 
 void ANoLiftNoLoveCharacter::StartLifting()
 {
@@ -89,14 +75,24 @@ void ANoLiftNoLoveCharacter::StartLifting()
 	if (IsInteractingBarbell) {
 		IsWeightLifting = true;
 		SIMP->SetFlipbook(WeightLifting);
-		GetWorld()->GetTimerManager().SetTimer(TimerForLifting, this, &ANoLiftNoLoveCharacter::CheckIfStillLifting, 1.5f, false);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("Is the code delaying? Before")));
+		GetWorld()->GetTimerManager().SetTimer(TimerForLifting, this, &ANoLiftNoLoveCharacter::CheckIfStillLifting, TotalTimeForWeightLifting, false);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("Is the code delaying? After")));
 	}
 	if (IsInteractingDumbell) {
+		IsDumbbellLifting = true;
 		SIMP->SetFlipbook(DumbbellLifting);
-		GetWorld()->GetTimerManager().SetTimer(TimerForLifting, this, &ANoLiftNoLoveCharacter::AddStatsForDumbbell, 0.2f, false);
+		DumbellLiftingRep += 1;
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("You finish one dumbell! Current Count: %d"), DumbellLiftingRep));
+		GetWorld()->GetTimerManager().SetTimer(TimerForLifting, this, &ANoLiftNoLoveCharacter::RevertAnimation, TotalTimeForDumbellLifting, false);
 	}
 }
 
+void ANoLiftNoLoveCharacter::RevertAnimation()
+{
+
+	SIMP->SetFlipbook(Idle);
+}
 
 
 void ANoLiftNoLoveCharacter::CheckIfStillLifting()
@@ -111,14 +107,11 @@ void ANoLiftNoLoveCharacter::CheckIfStillLifting()
 		SIMP->SetFlipbook(Idle);
 	}
 
+	
+
 }
 
-void ANoLiftNoLoveCharacter::AddStatsForDumbbell()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("You finish one dumbell!")));
-	DumbellLiftingRep += 1;
-	SIMP->SetFlipbook(Idle);
-}
+
 
 //Mouse Interrupt
 void ANoLiftNoLoveCharacter::CheckIfLifting()
@@ -128,6 +121,13 @@ void ANoLiftNoLoveCharacter::CheckIfLifting()
 		IsWeightLifting = false;
 		
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("Not Finish WeightLifting! Resetted IsWeightLifting")));
+		GetWorldTimerManager().ClearTimer(TimerForLifting);
+		SIMP->SetFlipbook(Idle);
+	}
+
+	if (IsDumbbellLifting)
+	{
+		IsDumbbellLifting = false;
 		GetWorldTimerManager().ClearTimer(TimerForLifting);
 		SIMP->SetFlipbook(Idle);
 	}
@@ -154,7 +154,7 @@ void ANoLiftNoLoveCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 
 void ANoLiftNoLoveCharacter::MoveRight(float Value)
 {
-	if ((Controller != NULL) && (Value != 0.0f))
+	if ((Controller != NULL) && (Value != 0.0f) && !IsWeightLifting && !IsDumbbellLifting)
 	{
 		// find out which way is right
 		const FRotator Rotation = Controller->GetControlRotation();
@@ -172,6 +172,25 @@ void ANoLiftNoLoveCharacter::MoveRight(float Value)
 		else {
 			SetActorRotation(FRotator(0.f, 0.f, 0.f));
 		}
+		AddMovementInput(Direction, Value);
+	}
+}
+
+void ANoLiftNoLoveCharacter::MoveForward(float Value)
+{
+	//normal movement speed
+	if ((Controller != NULL) && (Value != 0.0f))
+	{
+
+		// find out which way is forward
+		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+		// get forward vector
+		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+
+
+
 		AddMovementInput(Direction, Value);
 	}
 }
