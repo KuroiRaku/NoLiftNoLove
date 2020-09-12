@@ -60,13 +60,16 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character", meta = (AllowPrivateAccess = "true"))
 	int WeightLiftingRep;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character", meta = (AllowPrivateAccess = "true"))
-	float TotalTimeForWeightLifting;
+	
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character", meta = (AllowPrivateAccess = "true"))
 	int DumbellLiftingRep;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character", meta = (AllowPrivateAccess = "true"))
+	float TotalTimeForWeightLifting;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character", meta = (AllowPrivateAccess = "true"))
+	float TotalTimeForDumbellLifting;
 	//interaction 
 
 
@@ -109,7 +112,7 @@ public:
 
 	void CheckIfStillLifting();
 
-	void AddStatsForDumbbell();
+	void RevertAnimation();
 
 	/** Returns SideViewCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetSideViewCameraComponent() const { return SideViewCameraComponent; }
