@@ -52,7 +52,7 @@ protected:
 	class UPaperFlipbook* Dropdown;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character", meta = (AllowPrivateAccess = "true"))
-	class UPaperFlipbook* DumbellLifting;
+	class UPaperFlipbook* DumbbellLifting;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character", meta = (AllowPrivateAccess = "true"))
 	float Score;
@@ -66,20 +66,23 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character", meta = (AllowPrivateAccess = "true"))
 	int DumbellLiftingRep;
 
+
+	//interaction 
+
+
 	//we only implement stats on fullgame :p
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats", meta = (AllowPrivateAccess = "true"))
 	int Strength;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats", meta = (AllowPrivateAccess = "true"))
 	int Endurance;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats", meta = (AllowPrivateAccess = "true"))
 	int Flexibility;
 
 	//Stats affect story
 	//Tread Mill will increase stamina
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats", meta = (AllowPrivateAccess = "true"))
 	int Stamina;
 
 public:
@@ -89,13 +92,24 @@ public:
 
 	FTimerHandle TimerForLifting;
 
+	//interaction
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character", meta = (AllowPrivateAccess = "true"))
+	bool IsInteractingDumbell;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character", meta = (AllowPrivateAccess = "true"))
+	bool IsInteractingBarbell;
+
 	bool IsWeightLifting;
+
+	bool IsDumbbellLifting;
 
 	void StartLifting();
 
 	void CheckIfLifting();
 
 	void CheckIfStillLifting();
+
+	void AddStatsForDumbbell();
 
 	/** Returns SideViewCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetSideViewCameraComponent() const { return SideViewCameraComponent; }

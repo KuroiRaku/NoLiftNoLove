@@ -77,8 +77,6 @@ void ANoLiftNoLoveCharacter::MoveForward(float Value)
 		// get forward vector
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 
-		//running movement speed
-		//THIS PART IS RUINING THE ROTATION!
 
 
 		AddMovementInput(Direction, Value);
@@ -87,10 +85,16 @@ void ANoLiftNoLoveCharacter::MoveForward(float Value)
 
 void ANoLiftNoLoveCharacter::StartLifting()
 {
-	IsWeightLifting = true;
-	SIMP->SetFlipbook(WeightLifting);
-	GetWorld()->GetTimerManager().SetTimer(TimerForLifting, this, &ANoLiftNoLoveCharacter::CheckIfStillLifting, 1.5f, false);
-	
+	//if player are not interacting, then meh :p
+	if (IsInteractingBarbell) {
+		IsWeightLifting = true;
+		SIMP->SetFlipbook(WeightLifting);
+		GetWorld()->GetTimerManager().SetTimer(TimerForLifting, this, &ANoLiftNoLoveCharacter::CheckIfStillLifting, 1.5f, false);
+	}
+	if (IsInteractingDumbell) {
+		SIMP->SetFlipbook(DumbbellLifting);
+		GetWorld()->GetTimerManager().SetTimer(TimerForLifting, this, &ANoLiftNoLoveCharacter::AddStatsForDumbbell, 0.2f, false);
+	}
 }
 
 
@@ -99,19 +103,30 @@ void ANoLiftNoLoveCharacter::CheckIfStillLifting()
 {
 	if (IsWeightLifting)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("You finish one rep!")));
+		
 		WeightLiftingRep += 1;
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Some variable values: x: %f, y: %f"), x, y));
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("You finish one rep! Current Rep: %d"), WeightLiftingRep));
 		IsWeightLifting = false;
 		SIMP->SetFlipbook(Idle);
 	}
+
+}
+
+void ANoLiftNoLoveCharacter::AddStatsForDumbbell()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("You finish one dumbell!")));
+	DumbellLiftingRep += 1;
+	SIMP->SetFlipbook(Idle);
 }
 
 //Mouse Interrupt
 void ANoLiftNoLoveCharacter::CheckIfLifting()
 {
-	if (IsWeightLifting)
+	if (IsWeightLifting )
 	{
 		IsWeightLifting = false;
+		
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("Not Finish WeightLifting! Resetted IsWeightLifting")));
 		GetWorldTimerManager().ClearTimer(TimerForLifting);
 		SIMP->SetFlipbook(Idle);
@@ -131,7 +146,7 @@ void ANoLiftNoLoveCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 	PlayerInputComponent->BindAction("Lifting", IE_Released, this, &ANoLiftNoLoveCharacter::CheckIfLifting);
 
 
-	PlayerInputComponent->BindAxis("MoveForward", this, &ANoLiftNoLoveCharacter::MoveForward);
+	//PlayerInputComponent->BindAxis("MoveForward", this, &ANoLiftNoLoveCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ANoLiftNoLoveCharacter::MoveRight);
 
 
