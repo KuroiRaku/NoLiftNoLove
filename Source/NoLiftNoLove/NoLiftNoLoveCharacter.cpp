@@ -82,14 +82,15 @@ void ANoLiftNoLoveCharacter::StartLifting()
 	if (IsInteractingDumbell) {
 		IsDumbbellLifting = true;
 		//SIMP->SetFlipbook(DumbbellLifting);
-		//DumbellLiftingRep += 1;
-		GetWorld()->GetTimerManager().SetTimer(TimerForLifting, this, &ANoLiftNoLoveCharacter::CheckIfStillLifting, TotalTimeForDumbellLifting, false);
+		DumbellLiftingRep += 1;
+		GetWorld()->GetTimerManager().SetTimer(TimerForLifting, this, &ANoLiftNoLoveCharacter::RevertAnimation, TotalTimeForDumbellLifting, false);
 	}
 }
 
 void ANoLiftNoLoveCharacter::RevertAnimation()
 {
 
+	GetWorldTimerManager().ClearTimer(TimerForLifting);
 	//SIMP->SetFlipbook(Idle);
 }
 
@@ -107,10 +108,10 @@ void ANoLiftNoLoveCharacter::CheckIfStillLifting()
 		}
 	}
 	if (IsInteractingDumbell) {
-		DumbellLiftingRep += 1;
-		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Some variable values: x: %f, y: %f"), x, y));
+		//DumbellLiftingRep += 1;
+		
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("You finish one dumbell! Current Count: %d"), DumbellLiftingRep));
-		IsWeightLifting = false;
+		IsDumbbellLifting = false;
 		//SIMP->SetFlipbook(Idle);
 
 	}
@@ -133,6 +134,7 @@ void ANoLiftNoLoveCharacter::CheckIfLifting()
 		//SIMP->SetFlipbook(Idle);
 	}
 
+	//if the animation still going on, it will just interrupt the animation
 	if (IsDumbbellLifting)
 	{
 		IsDumbbellLifting = false;
